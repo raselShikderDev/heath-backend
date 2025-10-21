@@ -1,5 +1,8 @@
-export type createPaitentInput ={
-    name:string,
-    email:string,
-    passowrd:string
-}
+export type createPatientInput = {
+  passowrd: string;
+  patient: {
+    name: string;
+    email: string;
+    address?: string;
+  };
+};

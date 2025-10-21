@@ -7,12 +7,17 @@ import { fileUploader } from "../../helpers/fileUploadByMulter";
 const router = Router();
 
 router.post(
-  "/create-paitent",
+  "/create-patient",
   fileUploader.upload.single("file"),
   (req: Request, res: Response, next: NextFunction) => {
-    req.body = userValidation.createPatientValidationSchema.parse(JSON.parse(req.body.data));
-    return usercontroller.createPaitent(req, res, next);
+    if (req.body?.data) {
+      req.body = userValidation.createPatientValidationSchema.parse(
+        JSON.parse(req.body.data)
+      );
+    }
+    return usercontroller.createPatient(req, res, next);
   }
 );
+
 
 export const userRouter = router;

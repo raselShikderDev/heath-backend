@@ -4,12 +4,11 @@ import { userServices } from "./user.services";
 import sendResponse from "../../shared/sendResponse";
 
 // Creat paitent
-const createPaitent = catchAsync(
+const createPatient = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    console.log("Body", req.body);
-    console.log("Data", req.body.data);
+    const result = await userServices.createPatient(req);
+    console.log("result before sendResponse:", result);
 
-    const result = await userServices.createPaitent(req.body);
     sendResponse(res, {
       statusCode: 201,
       success: true,
@@ -20,5 +19,5 @@ const createPaitent = catchAsync(
 );
 
 export const usercontroller = {
-  createPaitent,
+  createPatient,
 };
