@@ -2,6 +2,8 @@ import { NextFunction, Request, Response } from "express";
 import catchAsync from "../../shared/catchAsync";
 import { userServices } from "./user.services";
 import sendResponse from "../../shared/sendResponse";
+import pick from "../../helpers/pick";
+
 
 // Create paitent
 const createPatient = catchAsync(
@@ -50,8 +52,14 @@ const createAdmin = catchAsync(
 // get all from Db
 const getAllFromDB = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const {page, limit, searchTerm, sortBy, sortOrder, role, status} = req.query
-    const result = await userServices.getAllFromDB({page:Number(page), limit:Number(limit), searchTerm, sortBy, sortOrder, role, status});
+    // page, limit, sortBy, sortOrder - paggination & sorting
+    // searchTerm, feilds - Searching & filtering
+
+    const filters = pick(req.query, ["status", "role", "email", "searchTerm"])
+    const options = pick(req.query, ["page", "limit", "sortBy", "sortOrder"])
+
+    // const {page, limit, searchTerm, sortBy, sortOrder, role, status} = req.query
+    const result = await userServices.getAllFromDB(filters, options);
     console.log("result before sendResponse of get all:", result);
     sendResponse(res, {
       statusCode: 200,

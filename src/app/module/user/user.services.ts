@@ -3,6 +3,9 @@ import envVars from "../../../config/envVars";
 import { prisma } from "../../shared/pirsmaConfig";
 import * as bcrypt from "bcrypt";
 import { fileUploader } from "../../helpers/fileUploadByMulter";
+import { pagginationHelper } from "../../helpers/pagginationHelper";
+import { Prisma } from "@prisma/client";
+import { userSearchAbleFeilds } from "./user.constants";
 
 
 // Create Patient
@@ -139,28 +142,44 @@ const createAdmin = async (req: Request) => {
 
 
 // get all from Db
-const getAllFromDB = async ({ page, limit, searchTerm, sortBy, sortOrder }: { page: number, limit: number, searchTerm: any, sortBy: any, sortOrder: any, role:any, status:any }) => {
+const getAllFromDB = async (params: any, options: any) => {
+  const { page, limit, skip, sortBy, sortOrder } = pagginationHelper.calculatePaggination(options)
+  const { searchItem, ...filters } = params
 
-  const pageNumber = page || 1;
-  const limitNumber = limit || 5;
-  const skip = (pageNumber - 1) * limitNumber
-  // const sortByString = sortBy || "createdAt"
-  // const sortOrderString = sortOrder || "desc"
+
+  const andConditions: Prisma.UserWhereInput[] = []
+
+  if (searchItem) {
+    andConditions.push({
+      OR: userSearchAbleFeilds.map((feild) => ({
+        [feild]: {
+          contains: searchItem,
+          mode: "insensitive"
+        }
+      }))
+    })
+  }
+
+  if(Object.keys(filters).length > 0){
+    andConditions.push({
+      AND:Object.keys(filters).map(key=>({
+        [key]:{
+          equals:(filters as any)[key]
+        }
+      }))
+    })
+  }
 
   const result = await prisma.user.findMany({
     skip,
-    take: limitNumber,
+    take: limit,
     where: {
-      email: {
-        contains: searchTerm,
-        mode: "insensitive"
-      }
+      AND:andConditions
     },
-    orderBy: sortBy && sortOrder ? {
+    orderBy: {
       [sortBy]: sortOrder
-    } : {
-      createdAt: "desc"
     }
+
   })
   return result
 }
