@@ -46,8 +46,25 @@ const createAdmin = catchAsync(
   }
 );
 
+
+// get all from Db
+const getAllFromDB = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const {page, limit, searchTerm, sortBy, sortOrder, role, status} = req.query
+    const result = await userServices.getAllFromDB({page:Number(page), limit:Number(limit), searchTerm, sortBy, sortOrder, role, status});
+    console.log("result before sendResponse of get all:", result);
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "Users successfully retrived",
+      data: result,
+    });
+  }
+);
+
 export const usercontroller = {
   createPatient,
   createDoctor,
   createAdmin,
+  getAllFromDB
 };

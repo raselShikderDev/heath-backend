@@ -137,8 +137,37 @@ const createAdmin = async (req: Request) => {
   return result;
 };
 
+
+// get all from Db
+const getAllFromDB = async ({ page, limit, searchTerm, sortBy, sortOrder }: { page: number, limit: number, searchTerm: any, sortBy: any, sortOrder: any, role:any, status:any }) => {
+
+  const pageNumber = page || 1;
+  const limitNumber = limit || 5;
+  const skip = (pageNumber - 1) * limitNumber
+  // const sortByString = sortBy || "createdAt"
+  // const sortOrderString = sortOrder || "desc"
+
+  const result = await prisma.user.findMany({
+    skip,
+    take: limitNumber,
+    where: {
+      email: {
+        contains: searchTerm,
+        mode: "insensitive"
+      }
+    },
+    orderBy: sortBy && sortOrder ? {
+      [sortBy]: sortOrder
+    } : {
+      createdAt: "desc"
+    }
+  })
+  return result
+}
+
 export const userServices = {
   createPatient,
   createDoctor,
   createAdmin,
+  getAllFromDB,
 };

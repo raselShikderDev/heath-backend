@@ -7,6 +7,11 @@ import { fileUploader } from "../../helpers/fileUploadByMulter";
 const router = Router();
 
 
+
+// Getting all users
+router.get("/", usercontroller.getAllFromDB)
+
+
 // Create Patient
 router.post(
   "/create-patient",
