@@ -31,7 +31,7 @@ const createPatient = async (req: Request) => {
   console.log("hasedPassword", hasedPassword);
 
   // Creating user and patient
-  const result = await prisma.$transaction(async (trans) => {
+  const result = await prisma.$transaction(async (trans:any) => {
     await trans.user.create({
       data: {
         email: req.body.patient?.email,

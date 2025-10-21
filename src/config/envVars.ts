@@ -14,5 +14,11 @@ const envVars = {
     name: process.env.CLOUDINARY_NAME,
     url: process.env.CLOUDINARY_URL,
   },
+  jwt:{
+    access_secret:process.env.JWT_ACCESS_SECRET,
+    access_expires:process.env.JWT_ACCESS_EXPIRES,
+    refresh_secret:process.env.JWT_REFRESH_SECRET,
+    refresh_expires:process.env.JWT_REFRESH_EXPIRES,
+  }
 };
 export default envVars;
