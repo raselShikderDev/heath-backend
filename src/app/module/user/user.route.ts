@@ -6,6 +6,8 @@ import { fileUploader } from "../../helpers/fileUploadByMulter";
 
 const router = Router();
 
+
+// Create Patient
 router.post(
   "/create-patient",
   fileUploader.upload.single("file"),
@@ -16,6 +18,36 @@ router.post(
       );
     }
     return usercontroller.createPatient(req, res, next);
+  }
+);
+
+
+// Create Doctor
+router.post(
+  "/create-doctor",
+  fileUploader.upload.single("file"),
+  (req: Request, res: Response, next: NextFunction) => {
+    if (req.body?.data) {
+      req.body = userValidation.createDoctorValidationSchema.parse(
+        JSON.parse(req.body.data)
+      );
+    }
+    return usercontroller.createDoctor(req, res, next);
+  }
+);
+
+
+// Create Admin
+router.post(
+  "/create-admin",
+  fileUploader.upload.single("file"),
+  (req: Request, res: Response, next: NextFunction) => {
+    if (req.body?.data) {
+      req.body = userValidation.createAdminValidationSchema.parse(
+        JSON.parse(req.body.data)
+      );
+    }
+    return usercontroller.createAdmin(req, res, next);
   }
 );
 
