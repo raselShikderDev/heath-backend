@@ -3,13 +3,15 @@ import { usercontroller } from "./user.controller";
 import validateRequest from "../../middlewares/validateRequest";
 import { userValidation } from "./user.validation";
 import { fileUploader } from "../../helpers/fileUploadByMulter";
+import { authValidation } from "../../middlewares/authValidation";
+import { UserRole } from "@prisma/client";
 
 const router = Router();
 
 
 
 // Getting all users
-router.get("/", usercontroller.getAllFromDB)
+router.get("/", authValidation(UserRole.ADMIN, UserRole.DOCTOR), usercontroller.getAllFromDB)
 
 
 // Create Patient
@@ -31,6 +33,7 @@ router.post(
 router.post(
   "/create-doctor",
   fileUploader.upload.single("file"),
+  authValidation(UserRole.ADMIN),
   (req: Request, res: Response, next: NextFunction) => {
     if (req.body?.data) {
       req.body = userValidation.createDoctorValidationSchema.parse(
@@ -46,6 +49,7 @@ router.post(
 router.post(
   "/create-admin",
   fileUploader.upload.single("file"),
+  authValidation(UserRole.ADMIN),
   (req: Request, res: Response, next: NextFunction) => {
     if (req.body?.data) {
       req.body = userValidation.createAdminValidationSchema.parse(
