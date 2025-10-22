@@ -4,9 +4,8 @@ import { prisma } from "../../shared/pirsmaConfig";
 import * as bcrypt from "bcrypt";
 import { fileUploader } from "../../helpers/fileUploadByMulter";
 import { pagginationHelper } from "../../helpers/pagginationHelper";
-import { Prisma } from "@prisma/client";
+import { Prisma, UserRole } from "@prisma/client";
 import { userSearchAbleFeilds } from "./user.constants";
-
 
 // Create Patient
 const createPatient = async (req: Request) => {
@@ -81,13 +80,14 @@ const createDoctor = async (req: Request) => {
 
   // Creating user and doctor
   const result = await prisma.$transaction(async (trans: any) => {
-    await trans.doctor.create({
+    await trans.user.create({
       data: {
         email: req.body.doctor?.email,
         password: hasedPassword,
+        role: UserRole.DOCTOR,
       },
     });
-    return await trans.patient.create({
+    return await trans.doctor.create({
       data: req.body.doctor,
     });
   });
@@ -121,17 +121,20 @@ const createAdmin = async (req: Request) => {
     10
     // Number(envVars.bcrypt_salt as string)
   );
-  console.log("hasedPassword", hasedPassword);
+  // console.log("hasedPassword", hasedPassword);
 
   // Creating user and admin
   const result = await prisma.$transaction(async (trans: any) => {
-    await trans.admin.create({
+    await trans.user.create({
       data: {
         email: req.body.admin?.email,
         password: hasedPassword,
+        role: UserRole.ADMIN,
       },
     });
-    return await trans.patient.create({
+    console.log("admin", req.body.admin);
+
+    return await trans.admin.create({
       data: req.body.admin,
     });
   });
@@ -140,40 +143,40 @@ const createAdmin = async (req: Request) => {
   return result;
 };
 
-
-// get all from Db
+// get all users from Db
 const getAllFromDB = async (params: any, options: any) => {
-  const { page, limit, skip, sortBy, sortOrder } = pagginationHelper.calculatePaggination(options)
-  const { searchItem, ...filters } = params
+  const { page, limit, skip, sortBy, sortOrder } =
+    pagginationHelper.calculatePaggination(options);
+  const { searchItem, ...filters } = params;
 
+  const andConditions: Prisma.UserWhereInput[] = [];
 
-  const andConditions: Prisma.UserWhereInput[] = []
-
-
-  const whereConditons: Prisma.UserWhereInput = andConditions.length > 0 ? {
-    AND:andConditions
-  } : {}
-
+  const whereConditons: Prisma.UserWhereInput =
+    andConditions.length > 0
+      ? {
+          AND: andConditions,
+        }
+      : {};
 
   if (searchItem) {
     andConditions.push({
       OR: userSearchAbleFeilds.map((feild) => ({
         [feild]: {
           contains: searchItem,
-          mode: "insensitive"
-        }
-      }))
-    })
+          mode: "insensitive",
+        },
+      })),
+    });
   }
 
-  if(Object.keys(filters).length > 0){
+  if (Object.keys(filters).length > 0) {
     andConditions.push({
-      AND:Object.keys(filters).map(key=>({
-        [key]:{
-          equals:(filters as any)[key]
-        }
-      }))
-    })
+      AND: Object.keys(filters).map((key) => ({
+        [key]: {
+          equals: (filters as any)[key],
+        },
+      })),
+    });
   }
 
   const result = await prisma.user.findMany({
@@ -181,22 +184,22 @@ const getAllFromDB = async (params: any, options: any) => {
     take: limit,
     where: whereConditons,
     orderBy: {
-      [sortBy]: sortOrder
-    }
-
-  })
+      [sortBy]: sortOrder,
+    },
+  });
   const total = await prisma.user.count({
-      where:whereConditons
-    })
-    
+    where: whereConditons,
+  });
+
   return {
-    meta:{
-      page, 
+    meta: {
+      page,
       limit,
       total,
-    }
-  }
-}
+    },
+    data: result,
+  };
+};
 
 export const userServices = {
   createPatient,
