@@ -6,7 +6,7 @@ type IOptions = {
     sortOrder?: string
 }
 
-type IOptionsResult = {
+type IOptionsResult = { 
     page: number
     limit: number
     skip: number

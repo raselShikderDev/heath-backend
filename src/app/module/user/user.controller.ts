@@ -3,6 +3,7 @@ import catchAsync from "../../shared/catchAsync";
 import { userServices } from "./user.services";
 import sendResponse from "../../shared/sendResponse";
 import pick from "../../helpers/pick";
+import { userFilterAbleFeild, userFilteroptions } from "./user.constants";
 
 
 // Create paitent
@@ -55,8 +56,8 @@ const getAllFromDB = catchAsync(
     // page, limit, sortBy, sortOrder - paggination & sorting
     // searchTerm, feilds - Searching & filtering
 
-    const filters = pick(req.query, ["status", "role", "email", "searchTerm"])
-    const options = pick(req.query, ["page", "limit", "sortBy", "sortOrder"])
+    const filters = pick(req.query, userFilterAbleFeild)
+    const options = pick(req.query, userFilteroptions)
 
     // const {page, limit, searchTerm, sortBy, sortOrder, role, status} = req.query
     const result = await userServices.getAllFromDB(filters, options);
