@@ -154,8 +154,8 @@ const getAllFromDB = async (params: any, options: any) => {
   const whereConditons: Prisma.UserWhereInput =
     andConditions.length > 0
       ? {
-          AND: andConditions,
-        }
+        AND: andConditions,
+      }
       : {};
 
   if (searchItem) {
@@ -190,14 +190,13 @@ const getAllFromDB = async (params: any, options: any) => {
   const total = await prisma.user.count({
     where: whereConditons,
   });
-
   return {
     meta: {
       page,
       limit,
-      total,
+      total
     },
-    data: result,
+    data: result
   };
 };
 

@@ -44,7 +44,8 @@ const createAdmin = catchAsync(
       statusCode: 201,
       success: true,
       message: "Admin successfully created",
-      data: result,
+      data: result.data,
+      meta:result.meta
     });
   }
 );
@@ -56,8 +57,8 @@ const getAllFromDB = catchAsync(
     // page, limit, sortBy, sortOrder - paggination & sorting
     // searchTerm, feilds - Searching & filtering
 
-    const filters = pick(req.query, userFilterAbleFeild)
-    const options = pick(req.query, userFilteroptions)
+    const filters = pick(req.query ?? {}, userFilterAbleFeild)
+    const options = pick(req.query ?? {}, userFilteroptions)
 
     // const {page, limit, searchTerm, sortBy, sortOrder, role, status} = req.query
     const result = await userServices.getAllFromDB(filters, options);
