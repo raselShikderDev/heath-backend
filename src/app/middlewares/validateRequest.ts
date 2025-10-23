@@ -15,7 +15,6 @@ const validateRequest = (schema: ZodObject) => async (req: Request, res: Respons
 
 export default validateRequest;
 
-// import { NextFunction, Request, Response } from "express";
 // import { ZodObject } from "zod";
 
 //  const validateRequest =
