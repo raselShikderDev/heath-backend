@@ -2,7 +2,9 @@ import { addHours, addMinutes, format } from "date-fns";
 import { prisma } from "../../shared/pirsmaConfig";
 import { IOptions, pagginationHelper } from "../../helpers/pagginationHelper";
 import { Prisma } from "@prisma/client";
+import { IJWTPayload } from "../../types/common";
 
+// creating slots 
 const inserIntoDB = async (payload: any) => {
   const { startTime, endTime, startDate, endDate } = payload;
   const interalTime = 30; // in minutes
@@ -71,7 +73,7 @@ const inserIntoDB = async (payload: any) => {
 };
 
 // Get all available schedule for doctor
-const getSchedulesForDoctor = async (filters: any, options: IOptions) => {
+const getSchedulesForDoctor = async (user:IJWTPayload, filters: any, options: IOptions) => {
   const { page, limit, skip, sortBy, sortOrder } = pagginationHelper.calculatePaggination(options);
   const { startDateTime: filterStartDateTime, endDateTime: filterEndDateTime } = filters
 
@@ -103,19 +105,39 @@ const getSchedulesForDoctor = async (filters: any, options: IOptions) => {
         AND: andConditions,
       }
       : {};
-  console.log(whereConditons);
 
+      const doctorSchedules = await prisma.doctorSchedules.findMany({
+        where:{
+          doctor:{
+            email:user.email
+          }
+        }, 
+        select:{
+          scheduleId:true
+        }
+      })
+      const doctorSchedulesId = doctorSchedules.map(schedule=> schedule.scheduleId)
   const result = await prisma.schedule.findMany({
     skip,
     take: limit,
-    where: whereConditons,
+    where: {
+      ...whereConditons,
+      id:{
+        notIn:doctorSchedulesId
+      }
+    },
     orderBy: {
       [sortBy]: sortOrder
     }
   })
   console.log("result", result)
   const total = await prisma.schedule.count({
-    where: whereConditons
+    where: {
+      ...whereConditons,
+      id:{
+        notIn:doctorSchedulesId
+      }
+    }
   })
   // http://localhost:5000/api/v1/schedules?startDateTime=2026-10-19T12:00:00.000Z&endDateTime=2026-10-19T12:30:00.000Z
   return {

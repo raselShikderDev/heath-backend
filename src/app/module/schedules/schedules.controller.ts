@@ -4,6 +4,7 @@ import sendResponse from "../../shared/sendResponse";
 import { schedculeServices } from "./schedules.services";
 import { userFilteroptions } from "../user/user.constants";
 import pick from "../../helpers/pick";
+import { IJWTPayload } from "../../types/common";
 
 // 
 const inserIntoDB = catchAsync(
@@ -21,10 +22,10 @@ const inserIntoDB = catchAsync(
 
 // get all schedule for doctor
 const getSchedulesForDoctor = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request & { user?: IJWTPayload }, res: Response, next: NextFunction) => {
     const filters = pick(req.query ?? {}, ["startDateTime", "endDateTime"])
     const options = pick(req.query ?? {}, userFilteroptions)
-    const result = await schedculeServices.getSchedulesForDoctor(filters, options);
+    const result = await schedculeServices.getSchedulesForDoctor(req.user as IJWTPayload, filters, options);
 
     sendResponse(res, {
       statusCode: 200,

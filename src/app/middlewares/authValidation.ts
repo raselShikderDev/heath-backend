@@ -9,7 +9,7 @@ export const authValidation = (...roles: string[]) => {
     next: NextFunction
   ) => {
     try {
-      const token = req.cookies.accessToken;
+      const token = req.cookies.accessToken || req.headers.authorization;
       console.log("token", token);
 
       if (!token) {

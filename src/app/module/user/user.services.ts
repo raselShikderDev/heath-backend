@@ -93,6 +93,23 @@ const createDoctor = async (req: Request) => {
   });
   console.log("result in service of doctor", result);
 
+//   {
+//   "password": "StrongPassword123!",
+//   "doctor": {
+//     "name": "Dr. John Doe",
+//     "email": "johndoe@example.com",
+//     "contactNumber": "1234567890",
+//     "address": "123 Medical Street, City, Country",
+//     "registrationNumber": "REG-456789",
+//     "experience": 10,
+//     "gender": "MALE",
+//     "appointmentFee": 50,
+//     "qualification": "MBBS, MD",
+//     "currentWorkingPlace": "City Hospital",
+//     "designation": "Senior Consultant"
+//   }
+// }
+
   return result;
 };
 
