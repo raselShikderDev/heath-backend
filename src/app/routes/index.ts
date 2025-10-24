@@ -4,6 +4,7 @@ import { authRoute } from "../module/auth/auth.route";
 import { schedculeRoute } from "../module/schedules/schedules.route";
 import { doctorScheduleRoute } from "../module/doctorSchedule/doctorSchedule.route";
 import { SpecialtiesRoutes } from "../module/specialties/specialties.routes";
+import { doctorRoute } from "../module/doctor/auth.route";
 
 const router = express.Router();
 
@@ -25,9 +26,13 @@ const moduleRoutes = [
     route: doctorScheduleRoute,
   },
   {
-        path: '/specialties',
-        route: SpecialtiesRoutes
-    },
+    path: '/specialties',
+    route: SpecialtiesRoutes
+  },
+  {
+    path: '/doctor',
+    route: doctorRoute,
+  },
 ];
 
 moduleRoutes.forEach((route) => router.use(route.path, route.route));
