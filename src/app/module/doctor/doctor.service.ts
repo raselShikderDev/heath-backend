@@ -1,8 +1,9 @@
 
-import { Prisma } from "@prisma/client";
+import { Doctor, Prisma } from "@prisma/client";
 import { IOptions, pagginationHelper } from "../../helpers/pagginationHelper";
 import { prisma } from "../../shared/pirsmaConfig";
 import { doctorSearchAbleFeild } from "./doctor.constrains";
+import { IDoctorUpdateInput } from "./doctor.interface";
 
 
 const getAllFromDB = async (filters: any, options: IOptions) => {
@@ -53,7 +54,18 @@ const getAllFromDB = async (filters: any, options: IOptions) => {
 
 
 // Doctor update
-const updateDoctor = async (id:string)=>{
+const updateDoctor = async (id:string, payload:Partial<IDoctorUpdateInput>)=>{
+  const existingDoctor = await prisma.doctor.findUniqueOrThrow({
+    where:{
+      id,
+    }
+  })
+  const updateDoctor = await prisma.doctor.update({
+    where:{
+      id:existingDoctor.id
+    },
+    data:payload
+  })
 return
 }
 
