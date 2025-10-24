@@ -7,7 +7,7 @@ import { jwtHelper } from "../../helpers/jwtHelper";
 import { IJWTPayload } from "../../types/common";
 
 // Create doctor schedules
-const insertIntoDB = async (user: IJWTPayload, payload: {
+const createDoctorSchedules = async (user: IJWTPayload, payload: {
   schedulesIds: string[]
 }) => {
   const doctorData = await prisma.doctor.findUniqueOrThrow({
@@ -28,9 +28,8 @@ const insertIntoDB = async (user: IJWTPayload, payload: {
  return await prisma.doctorSchedules.createMany({
     data:doctorScheduleData
   })
-  
 };
 
 export const doctorScheduleServices = {
-  insertIntoDB,
+  createDoctorSchedules,
 };
