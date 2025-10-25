@@ -140,7 +140,20 @@ const getDoctor = async (id: string) => {
   return await prisma.doctor.findUniqueOrThrow({
     where: {
       id,
+      isDeleted:false
     },
+    include:{
+      doctorSpecialties:{
+        include:{
+          specialities:true
+        }
+      },
+      doctorSchedules:{
+        include:{
+          schedule:true
+        }
+      }
+    }
   });
 };
 

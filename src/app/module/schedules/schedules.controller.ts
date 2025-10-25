@@ -37,6 +37,22 @@ const getSchedulesForDoctor = catchAsync(
   }
 );
 
+
+// get a schedule for doctor
+const getSchedule = catchAsync(
+  async (req: Request & { user?: IJWTPayload }, res: Response, next: NextFunction) => {
+   
+    const result = await schedculeServices.getSchedule(req.params.id);
+
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "Schedule successfully retrived",
+      data: result,
+    });
+  }
+);
+
 // delete schedule from db
 const deleteScheduleFromDB = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -56,4 +72,5 @@ export const schedculeController = {
   inserIntoDB,
   getSchedulesForDoctor,
   deleteScheduleFromDB,
+  getSchedule,
 };

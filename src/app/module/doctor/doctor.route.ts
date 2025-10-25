@@ -7,7 +7,7 @@ const router = Router();
 
 router.get(
   "/:id",
-  doctorController.updateDoctor
+  doctorController.getDoctor
 );
 router.get("/", authValidation(UserRole.ADMIN), doctorController.getAllFromDB);
 router.patch(

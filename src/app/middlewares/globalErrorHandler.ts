@@ -35,6 +35,11 @@ const globalErrorHandler = (
       error = err.meta
       statusCode = httpStatus.BAD_REQUEST
     }
+    if(err.code === "P2025"){
+      message = "No record was found for a query"
+      error = err.meta
+      statusCode = httpStatus.BAD_REQUEST
+    }
   } else if (err instanceof Prisma.PrismaClientValidationError) {
     message = "Validation error"
     error = err.message
