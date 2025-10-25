@@ -108,7 +108,7 @@ const updateDoctor = async (
         await trans.doctorSpecialties.createMany({
           data: {
             doctorId: id,
-            specialitiesId: specialtiy.specialitiesId,
+            specialitiesId: specialtiy.specialitiesId as string,
           },
         });
       }

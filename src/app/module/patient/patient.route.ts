@@ -25,4 +25,4 @@ router.delete(
   authValidation(UserRole.ADMIN),
   patientController.deletePatient);
 
-export const doctorRoute = router;
+export const patientRoute = router;
