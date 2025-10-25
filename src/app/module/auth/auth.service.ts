@@ -22,6 +22,10 @@ const isCorrectPassword = await bcrypt.compare(password, existedUser.password)
   )
   const refreshToken = jwtHelper.generateToken({email:existedUser.email, role:existedUser.role}, envVars.jwt.refresh_secret as string,envVars.jwt.refresh_expires as string
   )
+//   {
+//   "password": "StrongPassword123!",
+//   "email": "johndoe@example.com"
+// }
   return {
     accessToken,
     refreshToken,
