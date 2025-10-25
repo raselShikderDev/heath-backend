@@ -3,21 +3,23 @@ import { prisma } from "../../shared/pirsmaConfig";
 import { IOptions, pagginationHelper } from "../../helpers/pagginationHelper";
 import { Prisma } from "@prisma/client";
 import { IJWTPayload } from "../../types/common";
+import apiError from "../../errors/apiError";
+import httpStatus from "http-status"
 
-// creating slots 
+// creating slots
 const inserIntoDB = async (payload: any) => {
   const { startTime, endTime, startDate, endDate } = payload;
   const interalTime = 30; // in minutes
   console.log({ startTime, endTime, startDate, endDate });
 
-  const schedules = []
+  const schedules = [];
 
   const currDate = new Date(startDate);
   const lastDate = new Date(endDate);
   console.log("currDate <= lastDate:", currDate <= lastDate);
 
   while (currDate <= lastDate) {
-    // creating actual start date time 
+    // creating actual start date time
     const startDateTime = new Date(
       addMinutes(
         addHours(
@@ -27,7 +29,7 @@ const inserIntoDB = async (payload: any) => {
         Number(startTime.split(":")[1])
       )
     );
-    // creating actual end date time 
+    // creating actual end date time
     const endDateTime = new Date(
       addMinutes(
         addHours(
@@ -37,29 +39,36 @@ const inserIntoDB = async (payload: any) => {
         Number(endTime.split(":")[1])
       )
     );
-    console.log({ startDateTime, endDateTime });
 
     // creating slot if not bookoed yet after adding interval
     while (startDateTime < endDateTime) {
-      const slotStartDateTime = startDateTime // 10:00
-      const slotEndDateTime = addMinutes(endDateTime, interalTime) // 10:30
+      const slotStartDateTime = startDateTime; // 10:00
+      const slotEndDateTime = addMinutes(endDateTime, interalTime); // 10:30
 
       const scheduleData = {
         startDateTime: slotStartDateTime,
-        endDateTime: slotEndDateTime
-      }
+        endDateTime: slotEndDateTime,
+      };
       const existingShedule = await prisma.schedule.findFirst({
-        where: scheduleData
-      })
+        where: scheduleData,
+      });
+      if (existingShedule) {
+        throw new apiError(httpStatus.BAD_REQUEST, "Shedules alreadyed created with this time")
+      }
+      console.log("existingShedule", existingShedule);
+
       if (!existingShedule) {
         const newSchedule = await prisma.schedule.create({
-          data: scheduleData
-        })
-        schedules.push(newSchedule)
+          data: scheduleData,
+        });
+        console.log("newSchedule", newSchedule);
+        schedules.push(newSchedule);
       }
-      slotStartDateTime.setMinutes(slotStartDateTime.getMinutes() + interalTime)
+      slotStartDateTime.setMinutes(
+        slotStartDateTime.getMinutes() + interalTime
+      );
     }
-    currDate.setDate(currDate.getDate() + 1)
+    currDate.setDate(currDate.getDate() + 1);
   }
   // http://localhost:5000/api/v1/schedules
   // {
@@ -68,14 +77,21 @@ const inserIntoDB = async (payload: any) => {
   // "startTime":"10:00",
   // "endTime":"17:00"
   // }
+  console.log("schedules:", schedules);
 
   return schedules;
 };
 
 // Get all available schedule for doctor
-const getSchedulesForDoctor = async (user:IJWTPayload, filters: any, options: IOptions) => {
-  const { page, limit, skip, sortBy, sortOrder } = pagginationHelper.calculatePaggination(options);
-  const { startDateTime: filterStartDateTime, endDateTime: filterEndDateTime } = filters
+const getSchedulesForDoctor = async (
+  user: IJWTPayload,
+  filters: any,
+  options: IOptions
+) => {
+  const { page, limit, skip, sortBy, sortOrder } =
+    pagginationHelper.calculatePaggination(options);
+  const { startDateTime: filterStartDateTime, endDateTime: filterEndDateTime } =
+    filters;
 
   console.log(filterStartDateTime, filterEndDateTime);
 
@@ -83,86 +99,98 @@ const getSchedulesForDoctor = async (user:IJWTPayload, filters: any, options: IO
 
   if (filterStartDateTime && filterEndDateTime) {
     andConditions.push({
-
       AND: [
         {
           startDateTime: {
-            gte: filterEndDateTime
-          }
+            gte: filterEndDateTime,
+          },
         },
         {
           endDateTime: {
-            gte: filterEndDateTime
-          }
-        }
-      ]
-
-    })
+            gte: filterEndDateTime,
+          },
+        },
+      ],
+    });
   }
   const whereConditons: Prisma.ScheduleWhereInput =
     andConditions.length > 0
       ? {
-        AND: andConditions,
-      }
+          AND: andConditions,
+        }
       : {};
 
-      const doctorSchedules = await prisma.doctorSchedules.findMany({
-        where:{
-          doctor:{
-            email:user.email
-          }
-        }, 
-        select:{
-          scheduleId:true
-        }
-      })
-      const doctorSchedulesId = doctorSchedules.map(schedule=> schedule.scheduleId)
+  const doctorSchedules = await prisma.doctorSchedules.findMany({
+    where: {
+      doctor: {
+        email: user.email,
+      },
+    },
+    select: {
+      scheduleId: true,
+    },
+  });
+  const doctorSchedulesId = doctorSchedules.map(
+    (schedule) => schedule.scheduleId
+  );
   const result = await prisma.schedule.findMany({
     skip,
     take: limit,
     where: {
       ...whereConditons,
-      id:{
-        notIn:doctorSchedulesId
-      }
+      id: {
+        notIn: doctorSchedulesId,
+      },
     },
     orderBy: {
-      [sortBy]: sortOrder
-    }
-  })
-  console.log("result", result)
+      [sortBy]: sortOrder,
+    },
+  });
+  console.log("result", result);
   const total = await prisma.schedule.count({
     where: {
       ...whereConditons,
-      id:{
-        notIn:doctorSchedulesId
-      }
-    }
-  })
+      id: {
+        notIn: doctorSchedulesId,
+      },
+    },
+  });
   // http://localhost:5000/api/v1/schedules?startDateTime=2026-10-19T12:00:00.000Z&endDateTime=2026-10-19T12:30:00.000Z
   return {
     meta: {
       page,
       limit,
-      total
+      total,
     },
-    data: result
+    data: result,
   };
-}
+};
 
 // delete schedule from db
 const deleteScheduleFromDB = async (id: string) => {
   const result = await prisma.schedule.delete({
     where: {
-      id:id
-    }
-  })
+      id: id,
+    },
+  });
   console.log("result", result);
-  return result
-}
+  return result;
+};
+
+// get schedule from db
+const getSchedule = async (id: string) => {
+  const result = await prisma.schedule.findUniqueOrThrow({
+    where: {
+      id: id,
+    },
+  });
+  console.log("result", result);
+  return result;
+};
 
 export const schedculeServices = {
   inserIntoDB,
   getSchedulesForDoctor,
-  deleteScheduleFromDB
+  deleteScheduleFromDB,
+  getSchedule
 };

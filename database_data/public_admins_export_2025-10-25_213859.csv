@@ -1,0 +1,5 @@
+id,name,email,profilePhoto,contactNumber,isDeleted,createdAt,updatedAt
+1549c9fe-d4d6-4c12-8dba-7b02439a3126,Alice Johnson,alice.johnson@example.com,https://res.cloudinary.com/dhht37fgc/image/upload/v1761163887/file-1761163885426-810356500.jpg,+1234567890,false,2025-10-22 20:11:33.003,2025-10-22 20:11:33.003
+c698f9de-b724-4787-a4ab-8c2272ba7455,Alice Johnson,alice.johnson1@example.com,,+1234567890,false,2025-10-22 20:51:48.777,2025-10-22 20:51:48.777
+9a5ac394-0507-4d10-9248-bff49d47cbf1,amiJohnson,ami.johnson@example.com,https://res.cloudinary.com/dhht37fgc/image/upload/v1761398191/file-1761398193561-68409751.jpg,+1234567890,false,2025-10-25 13:16:35.148,2025-10-25 13:16:35.148
+c3971c7a-8716-4827-aaa6-f2ea6a705f6d,tui updated,am8i.johnson@example.com,https://res.cloudinary.com/dhht37fgc/image/upload/v1761398466/file-1761398468170-431277139.jpg,+1234567890,false,2025-10-25 13:21:10.241,2025-10-25 13:25:43.673

@@ -8,6 +8,7 @@ const envVars = {
   port: process.env.PORT,
   database_url: process.env.DATABASE_URL,
   bcrypt_salt: process.env.BCRYPT_SALT,
+  OPENROUTER_API_KEY: process.env.OPENROUTER_API_KEY,
   cloudinary: {
     key: process.env.CLOUDINARY_KEY,
     secret: process.env.CLOUDINARY_SECRET,

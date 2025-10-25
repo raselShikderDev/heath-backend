@@ -1,6 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import envVars from "../../config/envVars";
 import { jwtHelper } from "../helpers/jwtHelper";
+import apiError from "../errors/apiError";
+import httpStatus from "http-status"
 
 export const authValidation = (...roles: string[]) => {
   return async (
@@ -13,7 +15,7 @@ export const authValidation = (...roles: string[]) => {
       console.log("token", token);
 
       if (!token) {
-        throw new Error(" You are not authorized Tokennot found");
+        throw new apiError(httpStatus.UNAUTHORIZED, " You are authorized");
       }
       const verifiedToken = jwtHelper.verifyToken(
         token,
@@ -22,10 +24,10 @@ export const authValidation = (...roles: string[]) => {
       console.log("verifiedToken", verifiedToken);
 
       if (!verifiedToken) {
-        throw new Error("You are not authorized");
+        throw new apiError(httpStatus.UNAUTHORIZED, "You are not authorized");
       }
       if (roles.length && !roles.includes(verifiedToken.role)) {
-        throw new Error(`${verifiedToken.role} not authorized`);
+        throw new apiError(httpStatus.UNAUTHORIZED, `${verifiedToken.role} not authorized`);
       }
       req.user = verifiedToken;
       next();

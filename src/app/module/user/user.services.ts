@@ -136,9 +136,7 @@ const createAdmin = async (req: Request) => {
   const hasedPassword = await bcrypt.hash(
     req.body.password,
     10
-    // Number(envVars.bcrypt_salt as string)
   );
-  // console.log("hasedPassword", hasedPassword);
 
   // Creating user and admin
   const result = await prisma.$transaction(async (trans: any) => {
