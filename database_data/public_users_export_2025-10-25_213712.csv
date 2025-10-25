@@ -1,0 +1,9 @@
+id,email,password,role,needPasswordChange,status,createdAt,updatedAt
+d96a69e1-daf9-4579-9744-5abaae96e563,alice.johnson@example.com,$2b$10$BQ4yNHDQzX5TukJ/ViOlSuTllPmkcMdHrWETs9I/9vmdvtBUDt5NW,ADMIN,true,ACTIVE,2025-10-22 20:11:32.785,2025-10-22 20:11:32.785
+6a183747-59f4-4d43-86c8-83de8b75cb1f,alice.johnson1@example.com,$2b$10$I5JW0YMFDj2BaJu00hLsfOU/CAy6jrneIghLXh/1amdzDv8vAwyjW,ADMIN,true,ACTIVE,2025-10-22 20:51:48.712,2025-10-22 20:51:48.712
+8ba1cd6f-397d-4875-baf9-a26c41c52a91,emily.carter@healthcare.com,$2b$10$Q6YVLj8a9Ox64VUqhNi.Z.hoAKrGbOEFiO0k.s.PvXv8ALxm8TJTO,DOCTOR,true,ACTIVE,2025-10-22 20:53:50.244,2025-10-22 20:53:50.244
+d02d1c82-1cc7-4edd-9888-4518b87d4b9b,ami.johnson@example.com,$2b$10$iopwb1iyn.K3f0783d7G.uoILilblRKrvE/mXYp0dqvBmPbc4trB2,ADMIN,true,ACTIVE,2025-10-25 13:16:35.146,2025-10-25 13:16:35.146
+4d5163f7-1853-4381-a88c-2492b197782b,am8i.johnson@example.com,$2b$10$axdeXIoZoRWbD9wx4tNraO3FQVFwjpK64a4/bFDXCO/zQK7xJRtYm,ADMIN,true,ACTIVE,2025-10-25 13:21:10.218,2025-10-25 13:21:10.218
+ac0ad6e9-a7f2-469c-a76a-67c5b6a385c4,samiul.karim@example.com,$2b$10$ezmoDr2yy8b0O8tb/pbzeeJA8TL0rqOIK3bcxZNP63ojJPRudeNzS,DOCTOR,true,ACTIVE,2025-10-25 15:25:01.774,2025-10-25 15:25:01.774
+fbf68104-b0e1-48a0-bfec-331171b24679,nabila.rahman@example.com,$2b$10$TNibG0M1ThdLic1PlhepVOMIQP9KZGM4mHIsNDnBjpgUv7E6kAeVW,DOCTOR,true,ACTIVE,2025-10-25 15:26:57.979,2025-10-25 15:26:57.979
+098d0dbf-c5c6-48ba-8f91-26b5f2db1334,farhan.ahmed@example.com,$2b$10$rjK4z7.nrUN3YnS13yUaAOibMWtN2lm.r5849S5DYovWDn091qv76,DOCTOR,true,ACTIVE,2025-10-25 15:32:48.016,2025-10-25 15:32:48.016

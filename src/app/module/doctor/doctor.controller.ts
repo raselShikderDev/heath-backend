@@ -26,8 +26,7 @@ const getAllFromDB = catchAsync(
 const updateDoctor = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     
-    const result = await doctorServices.getAllFromDB(req.params.id, req.body);
-
+    const result = await doctorServices.updateDoctor(req.params.id, req.body);
     sendResponse(res, {
       statusCode: 200,
       success: true,
@@ -67,9 +66,26 @@ const deleteDoctor = catchAsync(
   }
 );
 
+
+// get a doctor
+const getAIsuggestions = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    
+    const result = await doctorServices.getAIsuggestions(req.body);
+
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "Successfully received suggested doctor list",
+      data: result,
+    });
+  }
+);
+
 export const doctorController = {
   getAllFromDB,
   updateDoctor,
   getDoctor,
   deleteDoctor,
+  getAIsuggestions
 };

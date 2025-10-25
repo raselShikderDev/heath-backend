@@ -19,4 +19,4 @@ router.delete(
   adminController.deleteAdmin
 );
 
-export const doctorRoute = router;
+export const adminRoute = router;

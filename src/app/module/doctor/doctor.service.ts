@@ -1,8 +1,12 @@
-import { Doctor, Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { IOptions, pagginationHelper } from "../../helpers/pagginationHelper";
 import { prisma } from "../../shared/pirsmaConfig";
 import { doctorSearchAbleFeild } from "./doctor.constrains";
 import { IDoctorUpdateInput } from "./doctor.interface";
+import apiError from "../../errors/apiError";
+import httpstatus from "http-status";
+import { openai } from "../../helpers/opeRouterConfig";
+import { extractJsonFromMessage } from "../../helpers/extractAgentMessage";
 
 const getAllFromDB = async (filters: any, options: IOptions) => {
   const { page, limit, skip, sortBy, sortOrder } =
@@ -149,9 +153,67 @@ const deleteDoctor = async (id: string) => {
   });
 };
 
+const getAIsuggestions = async (payload: { symptoms: string }) => {
+  if (!(payload && payload.symptoms)) {
+    throw new apiError(httpstatus.BAD_REQUEST, "Symptoms is required");
+  }
+  console.log(`[retriving all doctor..]`);
+
+  const doctors = await prisma.doctor.findMany({
+    where: {
+      isDeleted: false,
+    },
+    include: {
+      doctorSpecialties: {
+        include: {
+          specialities: true,
+        },
+      },
+    },
+  });
+
+  const prompt = `
+You are a medical assistant AI. Based on the patient's symptoms, suggest the top 3 most suitable doctors.
+Each doctor has specialties and years of experience.
+Only suggest doctors who are relevant to the given symptoms.
+
+Symptoms: ${payload.symptoms}
+
+Here is the doctor list (in JSON):
+${JSON.stringify(doctors, null, 2)}
+
+Return your response in JSON format with full individual doctor data. 
+`;
+  console.log(`[retriving all suggested doctor by AI..]`);
+
+  const completion = await openai.chat.completions.create({
+    model: "z-ai/glm-4.5-air:free",
+    messages: [
+      {
+        role: "system",
+        content:
+          "You are a helpful AI medical assistant that provides doctor suggestions.",
+      },
+      {
+        role: "user",
+        content: prompt,
+      },
+    ],
+  });
+  const suggestedDoctors = extractJsonFromMessage(
+    completion.choices[0].message
+  );
+  console.log(suggestedDoctors);
+
+  // {
+  //   "symptoms": "Chest pain, shortness of breath, palpitations, fatigue, swelling in legs."
+  // }
+};
+
 export const doctorServices = {
   getAllFromDB,
   updateDoctor,
   getDoctor,
   deleteDoctor,
+  getAIsuggestions,
 };

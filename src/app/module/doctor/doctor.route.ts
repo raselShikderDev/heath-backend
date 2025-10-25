@@ -20,5 +20,10 @@ router.delete(
   authValidation(UserRole.ADMIN),
   doctorController.updateDoctor
 );
+router.post(
+  "/ai-suggestion",
+  authValidation(UserRole.ADMIN),
+  doctorController.getAIsuggestions
+);
 
 export const doctorRoute = router;

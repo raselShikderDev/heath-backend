@@ -39,13 +39,14 @@ const createDoctor = catchAsync(
 const createAdmin = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const result = await userServices.createAdmin(req);
+    console.log(result);
+    
     console.log("result before sendResponse of admin:", result);
     sendResponse(res, {
       statusCode: 201,
       success: true,
       message: "Admin successfully created",
-      data: result.data,
-      meta:result.meta
+      data: result,
     });
   }
 );
