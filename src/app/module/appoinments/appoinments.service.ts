@@ -1,7 +1,4 @@
-import { Request } from "express";
-import { fileUploader } from "../../helpers/fileUploadByMulter";
 import { prisma } from "../../shared/pirsmaConfig";
-import { Specialties } from "@prisma/client";
 import { IJWTPayload } from "../../types/common";
 import { v4 as uuidv4 } from "uuid";
 import { stripe } from "../../helpers/stripeConfigratation";
@@ -50,47 +47,49 @@ const createAppointment = async (
         isBooked: true,
       },
     });
-      const transactionId = uuidv4();
+    const transactionId = uuidv4();
 
-      const paymentData = await trans.payment.create({
-        data:{
-          appoinmentId:appointmentData.id,
-          transactionId:transactionId,
-          amount:existingDoctor.appointmentFee,
-        }
-      })
+    const paymentData = await trans.payment.create({
+      data: {
+        appoinmentId: appointmentData.id,
+        transactionId: transactionId,
+        amount: existingDoctor.appointmentFee,
+      }
+    })
 
-        const session = await stripe.checkout.sessions.create({
-            payment_method_types: ["card"],
-            mode: "payment",
-            customer_email: user.email,
-            line_items: [
-                {
-                    price_data: {
-                        currency: "bdt",
-                        product_data: {
-                            name: `Appointment with ${existingDoctor.name}`,
-                        },
-                        unit_amount: existingDoctor.appointmentFee * 100,
-                    },
-                    quantity: 1,
-                },
-            ],
-            metadata: {
-                appointmentId: appointmentData.id,
-                paymentId: paymentData.id
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ["card"],
+      mode: "payment",
+      customer_email: user.email,
+      line_items: [
+        {
+          price_data: {
+            currency: "bdt",
+            product_data: {
+              name: `Appointment with ${existingDoctor.name}`,
             },
-            success_url: `https://www.programming-hero.com/`,
-            cancel_url: `https://next.programming-hero.com/`,
-        });
-console.log(session);
+            unit_amount: existingDoctor.appointmentFee * 100,
+          },
+          quantity: 1,
+        },
+      ],
+      metadata: {
+        appointmentId: appointmentData.id,
+        paymentId: paymentData.id
+      },
+      success_url: `https://www.programming-hero.com/`,
+      cancel_url: `https://next.programming-hero.com/`,
+    });
+    console.log(session);
 
     //  http://localhost:5000/api/v1/appointments
     //     {
     //     "doctorId":"be7e556d-cf09-4ec0-b31a-7763660267d2",
     //     "scheduleId":"911255bf-7165-4c4d-9845-b67708455fce"
     // }
-    return appointmentData;
+    return {
+      paymenTUrl: session.url
+    };
   });
 };
 
