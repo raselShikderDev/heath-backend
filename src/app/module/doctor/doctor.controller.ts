@@ -17,7 +17,8 @@ const getAllFromDB = catchAsync(
       statusCode: 200,
       success: true,
       message: "Doctor successfully retrived",
-      data: result,
+      data: result.data,
+      meta:result.meta,
     });
   }
 );
