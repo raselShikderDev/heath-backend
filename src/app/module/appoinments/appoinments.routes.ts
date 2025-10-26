@@ -12,6 +12,12 @@ router.get("/", appointmentController.getAllAppointment);
 
 router.post("/", authValidation(UserRole.PATIENT), appointmentController.createAppointment);
 
+router.patch(
+  "status/:id",
+  authValidation(UserRole.ADMIN, UserRole.DOCTOR),
+  appointmentController.deleteAppointment
+);
+
 router.delete(
   "/:id",
   authValidation(UserRole.ADMIN, UserRole.ADMIN),
