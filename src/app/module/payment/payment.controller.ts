@@ -3,6 +3,9 @@ import catchAsync from "../../shared/catchAsync";
 import sendResponse from "../../shared/sendResponse";
 import { stripe } from "../../helpers/stripeConfigratation";
 import { paymentService } from "./payment.service";
+
+
+
 const handleStripeWebhookEvent = catchAsync(async (req: Request, res: Response) => {
 
     const sig = req.headers["stripe-signature"] as string;
@@ -25,6 +28,6 @@ const handleStripeWebhookEvent = catchAsync(async (req: Request, res: Response) 
     });
 });
 
-export const PaymentController = {
+export const paymentController = {
     handleStripeWebhookEvent
 }

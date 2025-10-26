@@ -1,13 +1,11 @@
 import { Router } from "express";
-
-import { authValidation } from "../../middlewares/authValidation";
-import { UserRole } from "@prisma/client";
+import { paymentController } from "./payment.controller";
 
 const router = Router();
 
 
-router.post(
-  "/",
-);
+// router.post(
+//   "/", paymentController.handleStripeWebhookEvent
+// );
 
-export const paymentRoute = router;
+export const prescriptionsRoute = router;
