@@ -50,6 +50,24 @@ const getAllAppointment = catchAsync(
     });
 });
 
+const getAllDoctorAppointment = catchAsync(
+  async (req: Request & { user?: IJWTPayload }, res: Response) => {
+    const filters = pick(req.query ?? {}, userFilterAbleFeild);
+    const options = pick(req.query ?? {}, ["paymentStatus", "status"]);
+    const result = await appointmentService.getAllAppointment(
+      req.user as IJWTPayload,
+      filters,
+      options
+    );
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "All doctors appoinment data fetched successfully",
+      data: result.data,
+      meta: result.meta,
+    });
+});
+
 const deleteAppointment = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
   const result = await appointmentService.deleteAppointment(id);
@@ -78,4 +96,5 @@ export const appointmentController = {
     deleteAppointment,
     getMyAppointment,
     updateAppointmentStatus,
+    getAllDoctorAppointment
 };

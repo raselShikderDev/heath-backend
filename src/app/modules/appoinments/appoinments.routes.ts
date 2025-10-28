@@ -8,6 +8,10 @@ const router = express.Router();
 
 router.get("/", authValidation(...Object.keys(UserRole)), appointmentController.getAllAppointment);
 
+router.get("/my-appoinment", authValidation(UserRole.PATIENT, UserRole.DOCTOR), appointmentController.getMyAppointment);
+
+router.get("/all-doctor-appoinment", authValidation(UserRole.ADMIN), appointmentController.getAllDoctorAppointment);
+
 router.post("/", authValidation(UserRole.PATIENT), appointmentController.createAppointment);
 
 router.patch(

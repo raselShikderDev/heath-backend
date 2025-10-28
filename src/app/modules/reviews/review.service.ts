@@ -1,8 +1,9 @@
 import { prisma } from "../../shared/pirsmaConfig";
 import { IJWTPayload } from "../../types/common";
-import { IOptions } from "../../helpers/pagginationHelper";
+import { IOptions, pagginationHelper } from "../../helpers/pagginationHelper";
 import apiError from "../../errors/apiError";
 import httpsStatus from "http-status";
+import { Prisma } from "@prisma/client";
 
 const createReview = async (user: IJWTPayload, payload: any) => {
   const patientData = await prisma.patient.findUniqueOrThrow({
@@ -56,7 +57,62 @@ const getAllReview = async (
   user: IJWTPayload,
   filters: any,
   options: IOptions
-) => {};
+) => {
+  const { page, limit, skip, sortBy, sortOrder } =
+    pagginationHelper.calculatePaggination(options);
+  const { searchTerm, ...filterData } = filters;
+
+
+
+  const andConditions: Prisma.ReviewWhereInput[] = [];
+
+  if (searchTerm) {
+    andConditions.push({
+      OR: ["comment", "rating"].map((feild) => ({
+        [feild]: {
+          contains: searchTerm,
+          mode: "insensitive",
+        },
+      })),
+    });
+  }
+  if (Object.keys(filterData).length > 0) {
+    const filterConditions = Object.keys(filterData).map((key) => ({
+      [key]: {
+        equals: (filterData as any)[key],
+      },
+    }));
+    andConditions.push(...filterConditions);
+  }
+
+  const whereConditions: Prisma.ReviewWhereInput =
+    andConditions.length > 0 ? { AND: andConditions } : {};
+
+  const result = await prisma.review.findMany({
+    skip,
+    take: limit,
+    where: whereConditions,
+  });
+
+  const total = await prisma.review.count({
+    where: whereConditions,
+  });
+
+  return {
+    meta: {
+      page,
+      limit,
+      total,
+    },
+    data: result,
+  };
+
+
+
+
+
+
+};
 
 const deleteReview = async (id: string) => {
   const result = await prisma.review.delete({
@@ -71,7 +127,7 @@ const getMyReview = async (
   user: IJWTPayload,
   options: IOptions,
   filter: any
-) => {};
+) => { };
 
 export const reviewService = {
   createReview,

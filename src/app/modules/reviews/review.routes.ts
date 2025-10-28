@@ -8,7 +8,7 @@ const router = express.Router();
 
 router.get("/",  reviewController.getAllReview);
 
-router.post("/", reviewController.createReview);
+router.post("/", authValidation(...Object.keys(UserRole)), reviewController.createReview);
 
 
 

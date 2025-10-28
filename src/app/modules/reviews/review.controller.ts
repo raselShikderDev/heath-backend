@@ -4,7 +4,7 @@ import catchAsync from "../../shared/catchAsync";
 import sendResponse from "../../shared/sendResponse";
 import { IJWTPayload } from "../../types/common";
 import pick from "../../helpers/pick";
-import { userFilterAbleFeild } from "../user/user.constants";
+import { userFilterAbleFeild, userFilteroptions } from "../user/user.constants";
 import { reviewService } from "./review.service";
 
 const createReview = catchAsync(async (req: Request &{user?:IJWTPayload}, res: Response) => {
@@ -13,7 +13,7 @@ const createReview = catchAsync(async (req: Request &{user?:IJWTPayload}, res: R
     sendResponse(res, {
       statusCode: httpStatus.OK,
       success: true,
-      message: "Appoinment created successfully!",
+      message: "Review created successfully!",
       data: result,
     });
   }
@@ -26,7 +26,7 @@ const getMyReview = catchAsync(async (req: Request & { user?: IJWTPayload }, res
     sendResponse(res, {
         statusCode: httpStatus.OK,
         success: true,
-        message: 'Appoinment data fetched successfully',
+        message: 'Review data fetched successfully',
         data: result,
         // meta: result.meta,
     });
@@ -34,8 +34,8 @@ const getMyReview = catchAsync(async (req: Request & { user?: IJWTPayload }, res
 
 const getAllReview = catchAsync(
   async (req: Request & { user?: IJWTPayload }, res: Response) => {
-    const filters = pick(req.query ?? {}, userFilterAbleFeild);
-    const options = pick(req.query ?? {}, ["paymentStatus", "status"]);
+    const filters = pick(req.query ?? {}, ["comment", "searchTerm"]);
+    const options = pick(req.query ?? {}, userFilteroptions);
     const result = await reviewService.getAllReview(
       req.user as IJWTPayload,
       filters,
@@ -44,7 +44,7 @@ const getAllReview = catchAsync(
     sendResponse(res, {
       statusCode: httpStatus.OK,
       success: true,
-      message: "Appoinment data fetched successfully",
+      message: "Review data fetched successfully",
      data: result,
         // meta: result.meta,
     });
@@ -56,7 +56,7 @@ const deleteReview = catchAsync(async (req: Request, res: Response) => {
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: "Appoinment deleted successfully",
+    message: "Review deleted successfully",
     data: result,
   });
 });
@@ -67,7 +67,7 @@ const updateReviewStatus = catchAsync(async (req: Request & { user?: IJWTPayload
     sendResponse(res, {
         statusCode: httpStatus.OK,
         success: true,
-        message: 'Appoinment successfully updated',
+        message: 'Review successfully updated',
         data: result,
     });
 });

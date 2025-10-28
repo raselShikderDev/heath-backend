@@ -130,18 +130,72 @@ const getAllAppointment = async (
         ? { patient: true, schedule: true }
         : { doctor: true, schedule: true },
   });
-   const total = await prisma.appointment.count({
-        where: whereConditions
-    });
+  const total = await prisma.appointment.count({
+    where: whereConditions
+  });
 
-    return {
-        meta: {
-            total,
-            limit,
-            page
-        },
-        data: result
+  return {
+    meta: {
+      total,
+      limit,
+      page
+    },
+    data: result
+  }
+};
+
+const getAllDoctorAppointment = async (
+  user: IJWTPayload,
+  filters: any,
+  options: IOptions
+) => {
+  const { page, limit, skip, sortBy, sortOrder } =
+    pagginationHelper.calculatePaggination(options);
+  const { ...filterData } = filters;
+
+  if (user.role !== UserRole.ADMIN) {
+    throw new apiError(httpsStatus.UNAUTHORIZED, "You are not authorized")
+  }
+
+  const isAdmin = await prisma.admin.findUniqueOrThrow({
+    where:{
+        email:user.email
     }
+  })
+
+  const andConditions: Prisma.AppointmentWhereInput[] = [];
+
+  if (Object.keys(filterData).length > 0) {
+    const filterCoditions = Object.keys(filterData).map((key) => ({
+      [key]: (filterData as any)[key],
+    }));
+    andConditions.push(...filterCoditions);
+  }
+
+  const whereConditions: Prisma.AppointmentWhereInput =
+    andConditions.length > 0 ? { AND: andConditions } : {};
+
+  const result = prisma.appointment.findMany({
+    skip,
+    take: limit,
+    where: whereConditions,
+    orderBy: {
+      [sortBy]: sortOrder,
+    },
+    include: { patient: true, schedule: true, doctor: true },
+  });
+  const total = await prisma.appointment.count({
+    where: whereConditions
+  });
+
+  return {
+    meta: {
+      total,
+      limit,
+      page
+    },
+    data: result
+  }
 };
 
 const deleteAppointment = async (id: string) => {
@@ -217,22 +271,22 @@ const updateAppointmentStatus = async (user: IJWTPayload, status: AppointmentSta
       doctor: true
     },
   })
-    
-  if(UserRole.DOCTOR === user.role){
+
+  if (UserRole.DOCTOR === user.role) {
     if (!(appointmentData.doctor.email === user.email)) {
       throw new apiError(httpsStatus.BAD_REQUEST, "This is not your account");
     }
   }
 
   const result = await prisma.appointment.update({
-    where:{
-      id:appointmentId
+    where: {
+      id: appointmentId
     },
-    data:{
+    data: {
       status
     }
   })
-return result
+  return result
 }
 
 export const appointmentService = {
@@ -241,4 +295,5 @@ export const appointmentService = {
   deleteAppointment,
   getMyAppointment,
   updateAppointmentStatus,
+  getAllDoctorAppointment,
 };
