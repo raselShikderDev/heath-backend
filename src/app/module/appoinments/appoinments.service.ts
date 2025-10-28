@@ -58,8 +58,8 @@ const createAppointment = async (
         appoinmentId: appointmentData.id,
         transactionId: transactionId,
         amount: existingDoctor.appointmentFee,
-      }
-    })
+      },
+    });
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
@@ -79,7 +79,7 @@ const createAppointment = async (
       ],
       metadata: {
         appointmentId: appointmentData.id,
-        paymentId: paymentData.id
+        paymentId: paymentData.id,
       },
       success_url: `https://www.programming-hero.com/`,
       cancel_url: `https://next.programming-hero.com/`,
@@ -97,9 +97,51 @@ const createAppointment = async (
   });
 };
 
-const getAllAppointment = async () => {
-  /// need to develop with all searching and filtering
-  return await prisma.appointment.findMany();
+const getAllAppointment = async (
+  user: IJWTPayload,
+  filters: any,
+  options: IOptions
+) => {
+  const { page, limit, skip, sortBy, sortOrder } =
+    pagginationHelper.calculatePaggination(options);
+  const { ...filterData } = filters;
+
+  const andConditions: Prisma.AppointmentWhereInput[] = [];
+
+  if (Object.keys(filterData).length > 0) {
+    const filterCoditions = Object.keys(filterData).map((key) => ({
+      [key]: (filterData as any)[key],
+    }));
+    andConditions.push(...filterCoditions);
+  }
+
+  const whereConditions: Prisma.AppointmentWhereInput =
+    andConditions.length > 0 ? { AND: andConditions } : {};
+
+  const result = prisma.appointment.findMany({
+    skip,
+    take: limit,
+    where: whereConditions,
+    orderBy: {
+      [sortBy]: sortOrder,
+    },
+    include:
+      user.role === UserRole.DOCTOR
+        ? { patient: true, schedule: true }
+        : { doctor: true, schedule: true },
+  });
+   const total = await prisma.appointment.count({
+        where: whereConditions
+    });
+
+    return {
+        meta: {
+            total,
+            limit,
+            page
+        },
+        data: result
+    }
 };
 
 const deleteAppointment = async (id: string) => {

@@ -5,27 +5,19 @@ import catchAsync from "../../shared/catchAsync";
 import sendResponse from "../../shared/sendResponse";
 import { IJWTPayload } from "../../types/common";
 import pick from "../../helpers/pick";
+import { userFilterAbleFeild } from "../user/user.constants";
 
-const createAppointment = catchAsync(async (req: Request & { user?: IJWTPayload }, res: Response) => {
+const createAppointment = catchAsync(async (req: Request &{user?:IJWTPayload}, res: Response) => {
     const result = await appointmentService.createAppointment(req.user as IJWTPayload, req.body);
 
     sendResponse(res, {
-        statusCode: httpStatus.OK,
-        success: true,
-        message: "Appoinment created successfully!",
-        data: result
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "Appoinment created successfully!",
+      data: result,
     });
-});
-
-const getAllAppointment = catchAsync(async (req: Request, res: Response) => {
-    const result = await appointmentService.getAllAppointment();
-    sendResponse(res, {
-        statusCode: httpStatus.OK,
-        success: true,
-        message: 'Appoinment data fetched successfully',
-        data: result,
-    });
-});
+  }
+);
 
 const getMyAppointment = catchAsync(async (req: Request & { user?: IJWTPayload }, res: Response) => {
     const filters = pick(req.query ?? {}, ["status", "paymentStatus"])
@@ -40,6 +32,35 @@ const getMyAppointment = catchAsync(async (req: Request & { user?: IJWTPayload }
     });
 });
 
+const getAllAppointment = catchAsync(
+  async (req: Request & { user?: IJWTPayload }, res: Response) => {
+    const filters = pick(req.query ?? {}, userFilterAbleFeild);
+    const options = pick(req.query ?? {}, ["paymentStatus", "status"]);
+    const result = await appointmentService.getAllAppointment(
+      req.user as IJWTPayload,
+      filters,
+      options
+    );
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "Appoinment data fetched successfully",
+      data: result.data,
+      meta: result.meta,
+    });
+});
+
+const deleteAppointment = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const result = await appointmentService.deleteAppointment(id);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Appoinment deleted successfully",
+    data: result,
+  });
+});
+
 const updateAppointmentStatus = catchAsync(async (req: Request & { user?: IJWTPayload }, res: Response) => {
 
     const result = await appointmentService.getMyAppointment(req.user as IJWTPayload, req.body, req.params.id);
@@ -47,17 +68,6 @@ const updateAppointmentStatus = catchAsync(async (req: Request & { user?: IJWTPa
         statusCode: httpStatus.OK,
         success: true,
         message: 'Appoinment successfully updated',
-        data: result,
-    });
-});
-
-const deleteAppointment = catchAsync(async (req: Request, res: Response) => {
-    const { id } = req.params;
-    const result = await appointmentService.deleteAppointment(id);
-    sendResponse(res, {
-        statusCode: httpStatus.OK,
-        success: true,
-        message: 'Appoinment deleted successfully',
         data: result,
     });
 });
