@@ -11,4 +11,4 @@ router.post(
   "/", prescriptionsController.createPrescription
 );
 
-export const paymentRoute = router;
+export const prescriptionsRoute = router;

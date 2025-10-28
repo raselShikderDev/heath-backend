@@ -8,4 +8,4 @@ const router = Router();
 //   "/", paymentController.handleStripeWebhookEvent
 // );
 
-export const prescriptionsRoute = router;
+export const paymentRoute = router;
