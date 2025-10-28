@@ -16,8 +16,8 @@ router.get(
   patientController.getPatient
 );
 router.patch(
-  "/:id",
-  authValidation(UserRole.ADMIN),
+  "/",
+  authValidation(UserRole.PATIENT),
   patientController.updatePatient
 );
 router.delete(
