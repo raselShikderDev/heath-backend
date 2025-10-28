@@ -5,12 +5,13 @@ import pick from "../../helpers/pick";
 import { userFilteroptions } from "../user/user.constants";
 import { patientServices } from "./patient.service";
 import { patientFilterAbleField } from "./patient.constrains";
+import { IJWTPayload } from "../../types/common";
 
 // get Patients
 const getAllFromDB = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const filters = pick(req.query ?? {}, patientFilterAbleField)
-    const options = pick(req.query ?? {}, userFilteroptions)
+    const filters = pick(req.query ?? {}, patientFilterAbleField);
+    const options = pick(req.query ?? {}, userFilteroptions);
     const result = await patientServices.getAllFromDB(filters, options);
 
     sendResponse(res, {
@@ -24,9 +25,15 @@ const getAllFromDB = catchAsync(
 
 // update Patient
 const updatePatient = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
-    
-    const result = await patientServices.updatePatient(req.params.id, req.body);
+  async (
+    req: Request & { user?: IJWTPayload },
+    res: Response,
+    next: NextFunction
+  ) => {
+    const result = await patientServices.updatePatient(
+      req.user as IJWTPayload,
+      req.body
+    );
 
     sendResponse(res, {
       statusCode: 200,
@@ -40,7 +47,6 @@ const updatePatient = catchAsync(
 // get a Patient
 const getPatient = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    
     const result = await patientServices.getPatient(req.params.id);
 
     sendResponse(res, {
@@ -55,7 +61,6 @@ const getPatient = catchAsync(
 // get a Patient
 const deletePatient = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    
     const result = await patientServices.getPatient(req.params.id);
 
     sendResponse(res, {
