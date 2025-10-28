@@ -33,4 +33,5 @@ const getDoctorSchedule = catchAsync(
 
 export const doctorScheduleController = {
   createDoctorSchedules,
+  getDoctorSchedule,
 };

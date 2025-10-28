@@ -4,6 +4,7 @@ import { userServices } from "./user.services";
 import sendResponse from "../../shared/sendResponse";
 import pick from "../../helpers/pick";
 import { userFilterAbleFeild, userFilteroptions } from "./user.constants";
+import { IJWTPayload } from "../../types/common";
 
 
 // Create paitent
@@ -73,9 +74,39 @@ const getAllFromDB = catchAsync(
   }
 );
 
+
+// get all from Db
+const getMyProfile = catchAsync(
+  async (req: Request &{user?:IJWTPayload}, res: Response, next: NextFunction) => {
+
+    const result = await userServices.getMyProfile(req.user as IJWTPayload);
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "My profile successfully retrived",
+      data: result,
+    });
+  }
+);
+
+const updateUserStatus = catchAsync(
+  async (req: Request , res: Response, next: NextFunction) => {
+
+    const result = await userServices.updateUserStatus(req.params.id, req.body);
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "User status successfully updated",
+      data: result,
+    });
+  }
+);
+
 export const usercontroller = {
   createPatient,
   createDoctor,
   createAdmin,
-  getAllFromDB
+  getAllFromDB,
+  getMyProfile,
+  updateUserStatus
 };

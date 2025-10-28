@@ -13,6 +13,8 @@ const router = Router();
 // Getting all users
 router.get("/", authValidation(UserRole.ADMIN, UserRole.DOCTOR), usercontroller.getAllFromDB)
 
+router.get("/", authValidation(UserRole.ADMIN, UserRole.DOCTOR, UserRole.PATIENT), usercontroller.getMyProfile)
+
 
 // Create Patient
 router.post(
@@ -59,6 +61,10 @@ router.post(
     return usercontroller.createAdmin(req, res, next);
   }
 );
+
+
+// Update status
+router.patch("/:id/status", authValidation(UserRole.ADMIN), usercontroller.updateUserStatus)
 
 
 export const userRouter = router;
