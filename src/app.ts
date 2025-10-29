@@ -4,12 +4,17 @@ import globalErrorHandler from "./app/middlewares/globalErrorHandler";
 import notFound from "./app/middlewares/notFound";
 import router from "./app/routes";
 import cookieParser from "cookie-parser";
-import { PaymentController } from "./app/module/payment/payment.controller";
-
+import { paymentController } from "./app/modules/payment/payment.controller";
+import cron from "node-cron";
+import { appointmentService } from "./app/modules/appoinments/appoinments.service";
 
 const app: Application = express();
 
-app.post("/api/v1/payment/webhook", express.raw({ type: "application/json" }), PaymentController.handleStripeWebhookEvent)
+app.post(
+  "/payment/webhook",
+  express.raw({ type: "application/json" }),
+  paymentController.handleStripeWebhookEvent
+);
 
 app.use(
   cors({
@@ -20,9 +25,17 @@ app.use(
 
 //parser
 app.use(express.json());
-app.use(cookieParser())
+app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 
+cron.schedule("* * * * *", () => {
+  try {
+    appointmentService.cancelUnpaidAppoinment();
+    console.log(`Node corn called at ${new Date()}`);
+  } catch (error) {
+    console.error(error);
+  }
+});
 
 app.use("/api/v1", router);
 

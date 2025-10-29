@@ -1,14 +1,17 @@
 import express from "express";
-import { userRouter } from "../module/user/user.route";
-import { authRoute } from "../module/auth/auth.route";
-import { schedculeRoute } from "../module/schedules/schedules.route";
-import { doctorScheduleRoute } from "../module/doctorSchedule/doctorSchedule.route";
-import { SpecialtiesRoutes } from "../module/specialties/specialties.routes";
-import { doctorRoute } from "../module/doctor/doctor.route";
-import { patientRoute } from "../module/patient/patient.route";
-import { adminRoute } from "../module/admin/admin.route";
-import { appointmentRoutes } from "../module/appoinments/appoinments.routes";
-import { paymentRoute } from "../module/payment/payment.route";
+import { userRouter } from "../modules/user/user.route";
+import { authRoute } from "../modules/auth/auth.route";
+import { schedculeRoute } from "../modules/schedules/schedules.route";
+import { doctorScheduleRoute } from "../modules/doctorSchedule/doctorSchedule.route";
+import { SpecialtiesRoutes } from "../modules/specialties/specialties.routes";
+import { doctorRoute } from "../modules/doctor/doctor.route";
+import { patientRoute } from "../modules/patient/patient.route";
+import { adminRoute } from "../modules/admin/admin.route";
+import { appointmentRoutes } from "../modules/appoinments/appoinments.routes";
+import { prescriptionsRoute } from "../modules/prescriptions/prescriptions.route";
+import { reviewRoutes } from "../modules/reviews/review.routes";
+import { paymentRoute } from "../modules/payment/payment.route";
+import { metaRoute } from "../modules/meta/meta.route";
 
 const router = express.Router();
 
@@ -31,7 +34,7 @@ const moduleRoutes = [
   },
   {
     path: "/specialties",
-    route: SpecialtiesRoutes
+    route: SpecialtiesRoutes,
   },
   {
     path: "/doctors",
@@ -52,6 +55,18 @@ const moduleRoutes = [
   {
     path: "/payments",
     route: paymentRoute,
+  },
+  {
+    path: "/reviews",
+    route: reviewRoutes,
+  },
+  {
+    path: "/reviews",
+    route: prescriptionsRoute,
+  },
+  {
+    path: "/meta",
+    route: metaRoute,
   },
 ];
 

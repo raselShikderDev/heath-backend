@@ -11,11 +11,12 @@ model Appointment {
 
     videoCallingId String
     status         AppointmentStatus @default(SCHEDULED)
-    paymentStatus  PaymentStatus @default(UNPAID)
+    paymentStatus  PaymentStatus     @default(UNPAID)
     createdAt      DateTime          @default(now())
     updatedAt      DateTime          @updatedAt
     Payment        Payment?
     Prescriptin    Prescriptin?
+    Review         Review?
 
     @@map("appointments")
 }
@@ -48,4 +49,20 @@ model Prescriptin {
     followUpDate DateTime
     createdAt    DateTime @default(now())
     updatedAt    DateTime @updatedAt
+}
+
+model Review {
+    id            String      @id @default(uuid())
+    patientId     String
+    patient       Patient     @relation(fields: [patientId], references: [id])
+    doctorId      String
+    doctor        Doctor      @relation(fields: [doctorId], references: [id])
+    appointmentId String      @unique
+    appointment   Appointment @relation(fields: [appointmentId], references: [id])
+    rating        Int
+    comment       String?
+    createdAt     DateTime    @default(now())
+    updatedAt     DateTime    @updatedAt
+
+    @@map("reviews")
 }
