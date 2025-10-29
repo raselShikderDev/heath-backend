@@ -7,6 +7,7 @@ import { jwtHelper } from "../../helpers/jwtHelper";
 import emailSender from "./emailSender";
 import apiError from "../../errors/apiError";
 import httpStatus from "http-status"
+import { IJWTPayload } from "../../types/common";
 
 
 const login = async (email:string, password:string) => {
@@ -67,7 +68,7 @@ const refreshToken = async (token: string) => {
 
 };
 
-const changePassword = async (user: any, payload: any) => {
+const changePassword = async (user: IJWTPayload, payload: any) => {
     const userData = await prisma.user.findUniqueOrThrow({
         where: {
             email: user.email,

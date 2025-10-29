@@ -3,6 +3,7 @@ import catchAsync from "../../shared/catchAsync";
 import sendResponse from "../../shared/sendResponse";
 import { authServices } from "./auth.service";
 import httpStatus from "http-status"
+import { IJWTPayload } from "../../types/common";
 
 
 // Login
@@ -60,10 +61,10 @@ const refreshToken = catchAsync(async (req: Request, res: Response) => {
 });
 
 const changePassword = catchAsync(
-    async (req: Request & { user?: any }, res: Response) => {
+    async (req: Request & { user?: IJWTPayload }, res: Response) => {
         const user = req.user;
 
-        const result = await authServices.changePassword(user, req.body);
+        const result = await authServices.changePassword(user as IJWTPayload, req.body);
 
         sendResponse(res, {
             statusCode: httpStatus.OK,
