@@ -5,6 +5,7 @@ import sendResponse from "../../shared/sendResponse";
 import pick from "../../helpers/pick";
 import { userFilterAbleFeild, userFilteroptions } from "./user.constants";
 import { IJWTPayload } from "../../types/common";
+import httpStatus from "http-status"
 
 
 // Create paitent
@@ -41,7 +42,7 @@ const createAdmin = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const result = await userServices.createAdmin(req);
     console.log(result);
-    
+
     console.log("result before sendResponse of admin:", result);
     sendResponse(res, {
       statusCode: 201,
@@ -77,7 +78,7 @@ const getAllFromDB = catchAsync(
 
 // get all from Db
 const getMyProfile = catchAsync(
-  async (req: Request &{user?:IJWTPayload}, res: Response, next: NextFunction) => {
+  async (req: Request & { user?: IJWTPayload }, res: Response, next: NextFunction) => {
 
     const result = await userServices.getMyProfile(req.user as IJWTPayload);
     sendResponse(res, {
@@ -90,7 +91,7 @@ const getMyProfile = catchAsync(
 );
 
 const updateUserStatus = catchAsync(
-  async (req: Request , res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction) => {
 
     const result = await userServices.updateUserStatus(req.params.id, req.body);
     sendResponse(res, {
@@ -102,11 +103,26 @@ const updateUserStatus = catchAsync(
   }
 );
 
+const updateMyProfie = catchAsync(async (req: Request & { user?: IJWTPayload }, res: Response) => {
+
+  const user = req.user;
+
+  const result = await userServices.updateMyProfie(user as IJWTPayload, req);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "My profile updated!",
+    data: result
+  })
+});
+
 export const usercontroller = {
   createPatient,
   createDoctor,
   createAdmin,
   getAllFromDB,
   getMyProfile,
-  updateUserStatus
+  updateUserStatus,
+  updateMyProfie,
 };

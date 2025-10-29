@@ -15,6 +15,15 @@ router.get("/", authValidation(UserRole.ADMIN, UserRole.DOCTOR), usercontroller.
 
 router.get("/", authValidation(UserRole.ADMIN, UserRole.DOCTOR, UserRole.PATIENT), usercontroller.getMyProfile)
 
+router.patch(
+    "/update-my-profile",
+    authValidation(UserRole.ADMIN, UserRole.DOCTOR, UserRole.PATIENT),
+    fileUploader.upload.single('file'),
+    (req: Request, res: Response, next: NextFunction) => {
+        req.body = JSON.parse(req.body.data)
+        return usercontroller.updateMyProfie(req, res, next)
+    }
+);
 
 // Create Patient
 router.post(

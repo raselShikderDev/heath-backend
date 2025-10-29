@@ -62,8 +62,6 @@ const getAllReview = async (
     pagginationHelper.calculatePaggination(options);
   const { searchTerm, ...filterData } = filters;
 
-
-
   const andConditions: Prisma.ReviewWhereInput[] = [];
 
   if (searchTerm) {
