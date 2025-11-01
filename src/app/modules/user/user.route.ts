@@ -13,7 +13,7 @@ const router = Router();
 // Getting all users
 router.get("/", authValidation(UserRole.ADMIN, UserRole.DOCTOR), usercontroller.getAllFromDB)
 
-router.get("/", authValidation(UserRole.ADMIN, UserRole.DOCTOR, UserRole.PATIENT), usercontroller.getMyProfile)
+router.get("/my-profile", authValidation(UserRole.ADMIN, UserRole.DOCTOR, UserRole.PATIENT), usercontroller.getMyProfile)
 
 router.patch(
     "/update-my-profile",
